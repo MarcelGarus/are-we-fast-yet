@@ -1,0 +1,49 @@
+import run.mar
+
+struct QueenBoard {
+  free_rows: Slice[Bool],
+  free_maxs: Slice[Bool],
+  free_mins: Slice[Bool],
+  queen_rows: Slice[Int],
+}
+
+fun get(board: QueenBoard, row: Int, column: Int): Bool {
+  board.free_rows.get(row) and board.free_maxs.get(column + row) and
+    board.free_mins.get(column - row + 7)
+}
+fun set(board: &QueenBoard, row: Int, column: Int, value: Bool) {
+  board.free_rows.&.set(row, value)
+  board.free_maxs.&.set(column + row, value)
+  board.free_mins.&.set(column - row + 7, value)
+}
+fun place_queen(board: &QueenBoard, column: Int): Bool {
+  for row in 0..8 do {
+    if board.get(row, column) then {
+      board.queen_rows.&.set(row, column)
+      board.set(row, column, false)
+
+      if column == 7 then return true
+      if board.place_queen(column + 1) then return true
+
+      board.set(row, column, true)
+    }
+  }
+  false
+}
+
+fun queens(): Bool {
+  var board = QueenBoard {
+    free_rows  = filled_slice(8, true),
+    free_maxs  = filled_slice(16, true),
+    free_mins  = filled_slice(16, true),
+    queen_rows = filled_slice(8, -1),
+  }
+  board.&.place_queen(0)
+}
+
+fun run_queens() {
+  var result = true
+  for i in 0..10 do
+    result = result & queens()
+  if not(result) then panic("Wrong result")
+}
