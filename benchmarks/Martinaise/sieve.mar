@@ -1,0 +1,21 @@
+import run.mar
+
+fun run_sieve() {
+  var size = 5000
+  var flags = filled_slice(size, true)
+
+  var num_primes = 0
+
+  for i in 2..=size do
+    if flags.get(i - 1) then {
+      num_primes = num_primes + 1
+      var k = i + i
+      loop {
+        k <= size or break
+        flags.&.set(k - 1, false)
+        k = k + i
+      }
+    }
+
+  if num_primes != 669 then panic("Wrong result")
+}

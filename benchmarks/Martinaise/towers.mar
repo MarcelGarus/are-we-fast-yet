@@ -1,0 +1,52 @@
+import run.mar
+
+struct Disk { size: Int }
+struct Pile { disks: Stack[Disk] }
+struct Towers { piles: Slice[Pile], moves: Int }
+
+fun pop(pile: &Pile): Disk {
+  pile.disks.&.pop()
+}
+fun push(pile: &Pile, disk: Disk) {
+  if pile.disks.top_maybe() is some(top) then {
+    if disk.size >= top.size then
+      panic("Can't put {disk.size} on a disk of size {top.size}.")
+  }
+  pile.disks.&.push(disk)
+}
+fun pile(towers: &Towers, index: Int): &Pile {
+  towers.piles.get_ref(index)
+}
+fun move_top(towers: &Towers, from: Int, to: Int) {
+  var disk = towers.pile(from).pop()
+  towers.pile(to).push(disk)
+  towers.moves = towers.moves + 1
+}
+fun move(towers: &Towers, num: Int, from: Int, to: Int) {
+  if num == 1 then
+    towers.move_top(from, to)
+  else {
+    var other = 3 - from - to
+    towers.move(num - 1, from, other)
+    towers.move_top(from, to)
+    towers.move(num - 1, other, to)
+  }
+}
+fun build_tower(pile: &Pile, disks: Int) {
+  for i in 0..=disks do | TODO: including zero?
+    pile.push(Disk { size = disks - i })
+}
+
+fun run_towers() {
+  println("Running towers")
+
+  var piles = list[Pile]()
+  for i in 0..3 do
+    piles.&.push(Pile { disks = stack[Disk]() })
+  var towers = Towers { piles = piles.to_slice(), moves = 0 }
+
+  towers.&.pile(0).build_tower(13)
+  towers.&.move(13, 0, 1)
+
+  if towers.moves != 8191 then panic("Wrong result")
+}

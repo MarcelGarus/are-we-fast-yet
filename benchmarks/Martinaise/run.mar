@@ -1,0 +1,87 @@
+| This code is derived from the SOM benchmarks.
+
+import ../../../martinaise/stdlib.mar
+
+import sieve.mar
+import towers.mar
+
+fun main(): Never {
+  println("Starting...")
+
+  var args = get_process_args()
+  var name = args.get_maybe(1) or invalid_usage()
+  var benchmark = name.parse_benchmark()
+  var outer_iterations = {args.get_maybe(2) or "1"}.parse_int() or invalid_usage()
+  var inner_iterations = {args.get_maybe(4) or "1"}.parse_int() or invalid_usage()
+
+  run_benchmark(benchmark, outer_iterations, inner_iterations)
+
+  exit(0)
+}
+
+var usage_info = "
+  'run [benchmark] [num-iterations [inner-iter]]\n
+  'benchmark      - benchmark class name\n
+  'num-iterations - number of times to execute benchmark, default: 1\n
+  'inner-iter     - number of times the benchmark is executed in an inner loop,\n
+  '                 which is measured in total, default: 1"
+fun invalid_usage(): Never {
+  println(usage_info)
+  exit(1)
+}
+
+enum Benchmark { sieve, towers }
+
+var all_benchmarks = list(
+  |  Bounce: require('./bounce'),
+  |  CD: require('./cd'),
+  |  DeltaBlue: require('./deltablue'),
+  |  Havlak: require('./havlak'),
+  |  Json: require('./json'),
+  |  List: require('./list'),
+  |  Mandelbrot: require('./mandelbrot'),
+  |  NBody: require('./nbody'),
+  |  Permute: require('./permute'),
+  |  Queens: require('./queens'),
+  |  Richards: require('./richards'),
+  Benchmark.sieve,
+  |  Storage: require('./storage'),
+  Benchmark.towers,
+)
+
+fun parse_benchmark(name: String): Benchmark {
+  for benchmark in all_benchmarks do
+    if benchmark.debug().format() == name then
+      return benchmark
+  eprintln("Unknown benchmark {name}")
+  exit(1)
+}
+
+fun run_benchmark(
+  benchmark: Benchmark, outer_iterations: Int, inner_iterations: Int
+) {
+  var name = benchmark.debug().format()
+  println("Starting {name} benchmark ...")
+
+  var total = 0.0.seconds()
+
+  for i in 0..outer_iterations do {
+    var timer = start_timer()
+    for i in 0..inner_iterations do benchmark.run()
+    var runtime = timer.read_duration()
+
+    println("{name}: iterations=1 runtime: {runtime}")
+    total = total + runtime
+  }
+
+  println("
+    '{name}: iterations={outer_iterations}\n
+    'average: {total / outer_iterations.to_float()}\n
+    'Total Runtime: {total}")
+}
+
+fun run(benchmark: Benchmark) {
+  switch benchmark
+  case sieve  run_sieve()
+  case towers run_towers()
+}
