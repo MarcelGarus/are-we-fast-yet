@@ -33,9 +33,9 @@ fun invalid_usage(): Never {
 }
 
 enum Benchmark {
-  | permute,
-  | queens,
-  | sieve,
+  permute,
+  queens,
+  sieve,
   towers,
 }
 
@@ -48,9 +48,9 @@ var all_benchmarks = list(
   |  List: require('./list'),
   |  Mandelbrot: require('./mandelbrot'),
   |  NBody: require('./nbody'),
-  | Benchmark.permute, Benchmark.queens,
+  Benchmark.permute, Benchmark.queens,
   |  Richards: require('./richards'),
-  | Benchmark.sieve,
+  Benchmark.sieve,
   |  Storage: require('./storage'),
   Benchmark.towers,
 )
@@ -88,8 +88,8 @@ fun run_benchmark(
 
 fun run(benchmark: Benchmark) {
   switch benchmark
-  | case permute run_permute()
-  | case queens  run_queens()
-  | case sieve   run_sieve()
+  case permute run_permute()
+  case queens  run_queens()
+  case sieve   run_sieve()
   case towers  run_towers()
 }
