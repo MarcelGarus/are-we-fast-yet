@@ -7,6 +7,7 @@ struct Towers { piles: Slice[Pile], moves: Int }
 fun pop(pile: &Pile): Disk {
   pile.disks.&.pop()
 }
+
 fun push(pile: &Pile, disk: Disk) {
   if pile.disks.top_maybe() is some(top) then {
     if disk.size >= top.size then
@@ -14,14 +15,17 @@ fun push(pile: &Pile, disk: Disk) {
   }
   pile.disks.&.push(disk)
 }
+
 fun pile(towers: &Towers, index: Int): &Pile {
   towers.piles.get_ref(index)
 }
+
 fun move_top(towers: &Towers, from: Int, to: Int) {
   var disk = towers.pile(from).pop()
   towers.pile(to).push(disk)
   towers.moves = towers.moves + 1
 }
+
 fun move(towers: &Towers, num: Int, from: Int, to: Int) {
   if num == 1 then
     towers.move_top(from, to)
@@ -32,13 +36,14 @@ fun move(towers: &Towers, num: Int, from: Int, to: Int) {
     towers.move(num - 1, other, to)
   }
 }
+
 fun build_tower(pile: &Pile, disks: Int) {
   for i in 0..=disks do | TODO: including zero?
     pile.push(Disk { size = disks - i })
 }
 
 fun run_towers() {
-  println("Running towers")
+  | println("Running towers")
 
   var piles = list[Pile]()
   for i in 0..3 do
