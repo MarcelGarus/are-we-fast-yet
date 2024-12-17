@@ -6,7 +6,7 @@ fun run_sieve() {
 
   var num_primes = 0
 
-  for i in 2..=size do
+  for i in 2..(size + 1) do
     if flags.get(i - 1) then {
       num_primes = num_primes + 1
       var k = i + i
