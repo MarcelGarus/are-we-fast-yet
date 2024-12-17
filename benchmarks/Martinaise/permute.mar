@@ -1,0 +1,24 @@
+import run.mar
+
+fun permute(v: &Slice[Int], n: Int): Int {
+  var count = 1
+  if n == 0 then return count
+
+  var n1 = n - 1
+  count = count + v.permute(n1)
+  var i = n1
+  loop {
+    i >= 0 or break
+    v.swap(n1, i)
+    count = count + v.permute(n1)
+    v.swap(n1, i)
+    i = i - 1
+  }
+  count
+}
+
+fun run_permute() {
+  var v = filled_slice(6, 0)
+  var count = v.&.permute(6)
+  if count != 8660 then panic("Wrong result: {count}")
+}

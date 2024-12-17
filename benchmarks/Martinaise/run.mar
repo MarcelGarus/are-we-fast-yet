@@ -2,6 +2,7 @@
 
 import ../../../martinaise/stdlib.mar
 
+import permute.mar
 import sieve.mar
 import towers.mar
 
@@ -12,7 +13,7 @@ fun main(): Never {
   var name = args.get_maybe(1) or invalid_usage()
   var benchmark = name.parse_benchmark()
   var outer_iterations = {args.get_maybe(2) or "1"}.parse_int() or invalid_usage()
-  var inner_iterations = {args.get_maybe(4) or "1"}.parse_int() or invalid_usage()
+  var inner_iterations = {args.get_maybe(3) or "1"}.parse_int() or invalid_usage()
 
   run_benchmark(benchmark, outer_iterations, inner_iterations)
 
@@ -30,7 +31,7 @@ fun invalid_usage(): Never {
   exit(1)
 }
 
-enum Benchmark { sieve, towers }
+enum Benchmark { permute, sieve, towers }
 
 var all_benchmarks = list(
   |  Bounce: require('./bounce'),
@@ -41,7 +42,7 @@ var all_benchmarks = list(
   |  List: require('./list'),
   |  Mandelbrot: require('./mandelbrot'),
   |  NBody: require('./nbody'),
-  |  Permute: require('./permute'),
+  Benchmark.permute,
   |  Queens: require('./queens'),
   |  Richards: require('./richards'),
   Benchmark.sieve,
@@ -70,7 +71,7 @@ fun run_benchmark(
     for i in 0..inner_iterations do benchmark.run()
     var runtime = timer.read_duration()
 
-    println("{name}: iterations=1 runtime: {runtime}")
+    println("{name}: iterations=1 runtime: {runtime.in_microseconds()}us")
     total = total + runtime
   }
 
@@ -82,6 +83,7 @@ fun run_benchmark(
 
 fun run(benchmark: Benchmark) {
   switch benchmark
-  case sieve  run_sieve()
-  case towers run_towers()
+  case permute run_permute()
+  case sieve   run_sieve()
+  case towers  run_towers()
 }
